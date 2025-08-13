@@ -169,7 +169,7 @@ def resampleMask_to_refGrid(mask_array ,ref_plan, roi_name, output_path):
     resampled_mask_sitk = resampler.Execute(mask_sitk)
 
     # Export the binary mask to output folder
-    sitk.WriteImage(resampled_mask_sitk, os.path.join(output_path,f"Mask_{roi_name}.nii.gz"))
+    sitk.WriteImage(resampled_mask_sitk, os.path.join(output_path,f"Mask_{roi_name}.dcm"))
 
     resampled_mask_arr = sitk.GetArrayFromImage(resampled_mask_sitk).astype(bool)
 
@@ -196,7 +196,7 @@ def calculate_roi_statistics (roi_name, dose_diff_arr, output_path):
 
     #Drop 0 values corresponding to slices where the diff dose map is 0 because these slices are out of the cbct dose map region
     dose_diff_arr_filtered = dose_diff_arr_filtered[dose_diff_arr_filtered != 0]
-    
+
     # Apply absolute value to have all the dose differences in positive
     abs_dose_diff_arr = np.abs(dose_diff_arr_filtered)
 

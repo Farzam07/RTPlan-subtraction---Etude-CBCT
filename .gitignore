@@ -862,3 +862,41 @@ Input/Test Patient/Test_idenctical_dosemaps/output/Mask_OeilGche.nii.gz
 Input/Test Patient/Test_idenctical_dosemaps/output/Mask_PTV WB.nii.gz
 Input/Test Patient/Test_idenctical_dosemaps/output/Mask_RingPTVwb.nii.gz
 Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Tronc Cerebral.nii.gz
+Input/Test Patient/Protocol Tete/output/Mask_BlocAnt.dcm
+Input/Test Patient/Protocol Tete/output/Mask_BODY.dcm
+Input/Test Patient/Protocol Tete/output/Mask_Canal med.dcm
+Input/Test Patient/Protocol Tete/output/Mask_Cerveau.dcm
+Input/Test Patient/Protocol Tete/output/Mask_Chiasma.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CochleeDte.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CochleeGche.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CristallinDt.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CristallinDt+5.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CristallinGche.dcm
+Input/Test Patient/Protocol Tete/output/Mask_CristallinGche+5.dcm
+Input/Test Patient/Protocol Tete/output/Mask_Hypophyse.dcm
+Input/Test Patient/Protocol Tete/output/Mask_NerfOptiqueDt.dcm
+Input/Test Patient/Protocol Tete/output/Mask_NerfOptiqueGche.dcm
+Input/Test Patient/Protocol Tete/output/Mask_OeilDt.dcm
+Input/Test Patient/Protocol Tete/output/Mask_OeilGche.dcm
+Input/Test Patient/Protocol Tete/output/Mask_PTV WB.dcm
+Input/Test Patient/Protocol Tete/output/Mask_RingPTVwb.dcm
+Input/Test Patient/Protocol Tete/output/Mask_Tronc Cerebral.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_BlocAnt.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_BODY.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Canal med.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Cerveau.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Chiasma.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CochleeDte.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CochleeGche.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CristallinDt.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CristallinDt+5.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CristallinGche.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_CristallinGche+5.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Hypophyse.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_NerfOptiqueDt.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_NerfOptiqueGche.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_OeilDt.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_OeilGche.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_PTV WB.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_RingPTVwb.dcm
+Input/Test Patient/Test_idenctical_dosemaps/output/Mask_Tronc Cerebral.dcm

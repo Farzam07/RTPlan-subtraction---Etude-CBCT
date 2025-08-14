@@ -7,6 +7,8 @@ import SimpleITK as sitk
 import pandas as pd
 import shutil
 import re
+import time
+import matplotlib.patches as patches
 
 class Plan():
     def __init__(self, parent_folder):
@@ -238,6 +240,61 @@ def _unique_sheet_name(base: str, existing: set) -> str:
             return cand
         i += 1
 
+def plot_max_dose_diff (dose_diff_arr, ct_dose_arr, cbct_dose_arr, output_path, localisation_name, protocol_name):
+    """
+    Plot and save the slice where the dose difference is at it's maximum
+    Args:
+        dose_diff_arr (numpy array): Dose difference array
+        ct_dose_arr (numpy array): CT dose array
+        cbct_dose_arr (numpy array): Resampled CBCT dose array
+        output_path (string): Path to output folder
+    """
+
+    # Localise max dose difference
+    dose_diff_abs = np.abs(dose_diff_arr)
+    flat_index_maxdiff = np.argmax(dose_diff_abs)
+    coord_max = np.unravel_index(flat_index_maxdiff, dose_diff_arr.shape)
+    max_diff_value = dose_diff_abs[coord_max]
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    fig.suptitle(f"{localisation_name} - {protocol_name} — Max Absolute value dose difference slice", fontsize=14, fontweight='bold')
+
+    # Plot CT dose map
+    im0 = axes[0].imshow(ct_dose_arr[coord_max[0], :, :], cmap="jet")
+    axes[0].set_title("CT Dose Map (Gy)")
+    axes[0].axis('off')
+    fig.colorbar(im0, ax=axes[0], fraction=0.046, pad=0.04)
+
+    # CBCT Dose map
+    im1 = axes[1].imshow(cbct_dose_arr[coord_max[0], :, :], cmap="jet")
+    axes[1].set_title("Resampled CBCT Dose Map (Gy)")
+    axes[1].axis('off')
+    fig.colorbar(im1, ax=axes[1], fraction=0.046, pad=0.04)
+
+    # Dose difference map
+    im2 = axes[2].imshow(dose_diff_abs[coord_max[0], :, :], cmap="jet")
+    axes[2].set_title(f"Absolute value Dose Difference\n(Max = {max_diff_value:.2f} Gy)\n Circled in yellow")
+    axes[2].axis('off')
+
+    # Highlight max difference location
+    y, x = coord_max[1], coord_max[2]
+    circle = patches.Circle(
+        (x, y),                   # (x, y) center
+        radius=3.5,                # adjust for desired size
+        linewidth=0.5,
+        edgecolor='yellow',
+        facecolor='none',         # no fill
+        alpha=1               # transparency for the edge
+    )
+    axes[2].add_patch(circle)
+
+    fig.colorbar(im2, ax=axes[2], fraction=0.046, pad=0.04)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    filename = os.path.join(output_path, f'{localisation_name}_{protocol_name}_max_dose_difference_plot.pdf')
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close(fig)
+    # plt.show()
+
 ############################################################## M A I N ###############################################
 
 root_folder = ".\\Input"
@@ -258,11 +315,11 @@ try:
         writer = pd.ExcelWriter(excel_path, engine="openpyxl")
 
 
-
         try:
             for protocol_folder in os.listdir(loc_folder_path):
                 protocol_path = os.path.join(loc_folder_path, protocol_folder)
                 
+                print("******************************************************")
                 print(f"1. Analysing {protocol_path}")
 
                 # Ensure it's a directory
@@ -295,8 +352,8 @@ try:
                 cbct_dose_resampled = resampleDose_to_refGrid(cbctPlan, ctPlan, tx_iso)
 
                 # Save the resampled cbct dose map as an image
-                sitk.WriteImage(cbct_dose_resampled, os.path.join(output_path,"cbct_dose_resampled.nii.gz"))
-                print(f"\t Resampled CBCT dose map saved to: {os.path.join(output_path,"cbct_dose_resampled.nii.gz")}")
+                sitk.WriteImage(cbct_dose_resampled, os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_cbct_dose_resampled.nii.gz"))
+                print(f"\t Resampled CBCT dose map saved to: {os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_cbct_dose_resampled.nii.gz")}")
 
                 # Step 3: Subtract the resampled cbct dose map and ct dose map
                 print('3. Performing CBCT - CT subtraction')
@@ -308,8 +365,10 @@ try:
                 # Save the difference dose map as an image
                 dose_diff_image = sitk.GetImageFromArray(dose_diff_arr)
                 dose_diff_image.CopyInformation(ctPlan.rtDose_sitk)
-                sitk.WriteImage(dose_diff_image, os.path.join(output_path,"CBCT_minus_CT.nii.gz"))
+                sitk.WriteImage(dose_diff_image, os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_CBCT_minus_CT.nii.gz"))
 
+                #Save a figure of the max dose difference
+                plot_max_dose_diff(dose_diff_arr,ct_dose_arr,resampled_cbct_dose_arr,output_path, localisation_folder, protocol_folder)
 
                 # Step 4: Calculate the error in each structure
                 stat_df = pd.DataFrame(columns=[
@@ -320,15 +379,24 @@ try:
                         ]) # output dataframe
 
                 for structure in (s for s in ctPlan.roi_names if "Couch" not in s and "ORFIT" not in s) :
-                    roi_stats= calculate_roi_statistics(structure,dose_diff_arr, output_path)
-                    stat_df.loc[len(stat_df)] = roi_stats #Add the structure stats to output datafarame
-
+                    try:
+                        roi_stats= calculate_roi_statistics(structure,dose_diff_arr, output_path)
+                        stat_df.loc[len(stat_df)] = roi_stats #Add the structure stats to output datafarame
+                    except AttributeError as e:
+                        if "'Dataset' object has no attribute 'ContourSequence'" in str(e):
+                            print(f"Skipping {structure}: no contours found.")
+                            continue  # Skip to next ROI
+                        else:
+                             raise  # Re-raise if it's another kind of AttributeError
+                        
                 # Write to output excel file
                 sheet_base = _sanitize_sheet_name(protocol_folder)
                 sheet_name = _unique_sheet_name(sheet_base, sheet_names_seen)
                 stat_df = stat_df.sort_values(by="ROI", kind="mergesort")
                 stat_df.to_excel(writer, sheet_name=sheet_name, index=False)
                 print(f"\t Wrote stats to {excel_path} -> sheet '{sheet_name}'")
+
+                time.sleep(3)
 
 
         except Exception as e:

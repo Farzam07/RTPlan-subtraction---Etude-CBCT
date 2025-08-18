@@ -350,9 +350,11 @@ try:
                 tx_iso = iso_translation(cbctPlan.isocenter, ctPlan.isocenter)
                 print(f"\t\t Registration shift (X,Y,Z) in mm: {tx_iso.GetOffset()}")
                 cbct_dose_resampled = resampleDose_to_refGrid(cbctPlan, ctPlan, tx_iso)
+                resampled_cbct_dose_arr = sitk.GetArrayFromImage(cbct_dose_resampled) * cbctPlan.doseGridScaling
 
                 # Save the resampled cbct dose map as an image
-                sitk.WriteImage(cbct_dose_resampled, os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_cbct_dose_resampled.nii.gz"))
+                cbct_dose_resampled_scaled = sitk.GetImageFromArray(resampled_cbct_dose_arr) #Regenerate image to include doseGridScaling
+                sitk.WriteImage(cbct_dose_resampled_scaled, os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_cbct_dose_resampled.nii.gz"))
                 print(f"\t Resampled CBCT dose map saved to: {os.path.join(output_path,f"{localisation_folder}_{protocol_folder}_cbct_dose_resampled.nii.gz")}")
 
                 # Step 3: Subtract the resampled cbct dose map and ct dose map

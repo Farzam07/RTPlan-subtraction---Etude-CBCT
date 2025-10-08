@@ -10,6 +10,7 @@ import re
 import time
 import matplotlib.patches as patches
 
+
 class Plan():
     def __init__(self, parent_folder):
         """
@@ -68,7 +69,6 @@ class Plan():
         sorted_file_names_ct=sitk.ImageSeriesReader.GetGDCMSeriesFileNames(self.image_path,series_ID_ct) 
 
         self.image_sitk = sitk.ReadImage(sorted_file_names_ct)
-
 
 def iso_translation(iso_moving_mm, iso_fixed_mm):
     """
@@ -204,9 +204,9 @@ def calculate_roi_statistics (roi_name, dose_diff_arr, output_path):
 
     roi_stats={
     "ROI": roi_name,
-    "Mean Absolute Error (Gy)": np.mean(abs_dose_diff_arr),
-    "Median Absolute Error (Gy)": np.median(abs_dose_diff_arr),
-    "Max Absolute Error (Gy)": np.max(abs_dose_diff_arr)
+    "Mean Absolute Error (Gy)": round(np.mean(abs_dose_diff_arr),2),
+    "Median Absolute Error (Gy)": round(np.median(abs_dose_diff_arr),2),
+    "Max Absolute Error (Gy)": round(np.max(abs_dose_diff_arr),2)
     }
 
     return roi_stats

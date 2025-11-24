@@ -297,7 +297,8 @@ def plot_max_dose_diff (dose_diff_arr, ct_dose_arr, cbct_dose_arr, output_path, 
 
 ############################################################## M A I N ###############################################
 
-root_folder = ".\\Input"
+# root_folder = './Input'
+root_folder = input("Enter input folder: ")
 
  # Step 1: Go through folders and create CT and CBCT Plan objects (folder architecture: Root -> Localisations -> CBCT Protocols -> CT & CBCT folders)
 try:
@@ -380,7 +381,7 @@ try:
                             "Max Absolute Error (Gy)"
                         ]) # output dataframe
 
-                for structure in (s for s in ctPlan.roi_names if "Couch" not in s and "ORFIT" not in s) :
+                for structure in (s for s in ctPlan.roi_names if "Couch" not in s and "ORFIT" not in s and "Encompass" not in s and "Marker" not in s) :
                     try:
                         roi_stats= calculate_roi_statistics(structure,dose_diff_arr, output_path)
                         stat_df.loc[len(stat_df)] = roi_stats #Add the structure stats to output datafarame
